@@ -5,6 +5,8 @@ public class Node {
 	public char[][] board;
 	public int heuristicValue = 0;
 	public List<Node> children;
+	public int xPos;
+	public int yPos;
 	public Node parent;
 	public boolean max;
 	public int numCaptured;

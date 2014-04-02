@@ -127,30 +127,36 @@ public class Breakthrough {
 							if (i > 0) {
 								if (b.board[j][i-1] == 'X') {
 									// Create new node with b as the parent and add to b's children
-									Node forward = new Node(b.board, b, false);
-									forward.board[j][i] = 'X';
-									forward.board[j][i-1] = 'W';
+									Node child = new Node(b.board, b, false);
+									child.board[j][i] = 'X';
+									child.board[j][i-1] = 'W';
+									child.xPos = i-1;
+									child.yPos = j;
 	//								printBoard(forward);
-									b.children.add(forward);
+									b.children.add(child);
 								}
 								if (j == 1) {// 0) {
 									if (b.board[j-1][i-1] == 'X' || b.board[j-1][i-1] == 'B') {
 										// Create new node with b as the parent and add to b's children
-										Node forwardLeft = new Node(b.board, b, false);
-										forwardLeft.board[j][i] = 'X';
-										forwardLeft.board[j-1][i-1] = 'W';
+										Node child = new Node(b.board, b, false);
+										child.board[j][i] = 'X';
+										child.board[j-1][i-1] = 'W';
+										child.xPos = i-1;
+										child.yPos = j-1;
 	//									printBoard(forwardLeft);
-										b.children.add(forwardLeft);
+										b.children.add(child);
 									}
 //								}
 //								if (j < 2) {
 									if (b.board[j+1][i-1] == 'X' || b.board[j+1][i-1] == 'B') {
 										// Create new node with b as the parent and add to b's children
-										Node forwardRight = new Node(b.board, b, false);
-										forwardRight.board[j][i] = 'X';
-										forwardRight.board[j+1][i-1] = 'W';
+										Node child = new Node(b.board, b, false);
+										child.board[j][i] = 'X';
+										child.board[j+1][i-1] = 'W';
+										child.xPos = i-1;
+										child.yPos = j+1;
 	//									printBoard(forwardRight);
-										b.children.add(forwardRight);
+										b.children.add(child);
 									}
 								}
 							}
@@ -169,30 +175,36 @@ public class Breakthrough {
 							if (i < 4) {
 								if (b.board[j][i+1] == 'X') {
 									// Create new node with b as the parent and add to b's children
-									Node forward = new Node(b.board, b, true);
-									forward.board[j][i] = 'X';
-									forward.board[j][i+1] = 'B';
+									Node child = new Node(b.board, b, true);
+									child.board[j][i] = 'X';
+									child.board[j][i+1] = 'B';
+									child.xPos = i+1;
+									child.yPos = j;
 	//								printBoard(forward);
-									b.children.add(forward);
+									b.children.add(child);
 								}
 								if (j == 1) { // > 0) {
 									if (b.board[j-1][i+1] == 'X' || b.board[j-1][i+1] == 'W') {
 										// Create new node with b as the parent and add to b's children
-										Node forwardLeft = new Node(b.board, b, true);
-										forwardLeft.board[j][i] = 'X';
-										forwardLeft.board[j-1][i+1] = 'B';
+										Node child = new Node(b.board, b, true);
+										child.board[j][i] = 'X';
+										child.board[j-1][i+1] = 'B';
+										child.xPos = i+1;
+										child.yPos = j-1;
 	//									printBoard(forwardLeft);
-										b.children.add(forwardLeft);
+										b.children.add(child);
 									}
 //								}
 //								if (j < 2) {
 									if (b.board[j+1][i+1] == 'X' || b.board[j+1][i+1] == 'W') {
 										// Create new node with b as the parent and add to b's children
-										Node forwardRight = new Node(b.board, b, true);
-										forwardRight.board[j][i] = 'X';
-										forwardRight.board[j+1][i+1] = 'B';
+										Node child = new Node(b.board, b, true);
+										child.board[j][i] = 'X';
+										child.board[j+1][i+1] = 'B';
+										child.xPos = i+1;
+										child.yPos = j+1;
 	//									printBoard(forwardRight);
-										b.children.add(forwardRight);
+										b.children.add(child);
 									}
 								}
 							}
