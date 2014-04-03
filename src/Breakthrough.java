@@ -2,6 +2,8 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Breakthrough {
 	
@@ -11,45 +13,21 @@ public class Breakthrough {
 	public static void main(String[] args) {
 		Breakthrough array = new Breakthrough();
 		
+		List<Node> bestPath = new ArrayList<Node>();
+		
 		char[][] temp = array.readFile("src/input.txt");
 		
 		Node root = new Node(temp, null, true);
 		
-//		alphaBetaPrune(root, -Integer.MIN_VALUE, Integer.MAX_VALUE, true);
-		
-		int a = maxValue(root, -Integer.MIN_VALUE, Integer.MAX_VALUE);
+		int a = maxValue(root, -Integer.MIN_VALUE, Integer.MAX_VALUE, bestPath);
 		
 		System.err.println(a);
 	}
 	
-//	public static int alphaBetaPrune(Node n, int a, int b, boolean max) {
-//		if (cutOffTest(n)) {
-//			return n.heuristicValue;
-//		}
-//		if (max) {
-//			generateSuccessors(n.max, n);
-//			for (Node c : n.children) {
-//				n.alpha = Math.max(n.alpha, alphaBetaPrune(c, n.alpha, n.beta, !max));
-//				if (n.beta <= n.alpha) {
-//					break;
-//				}
-//			}
-//			return n.alpha;
-//		}
-//		else {
-//			generateSuccessors(n.max, n);
-//			for (Node c : n.children) {
-//				n.beta = Math.min(n.beta, alphaBetaPrune(c, n.alpha, n.beta, !max));
-//				if (n.beta <= n.alpha) {
-//					break;
-//				}
-//			}
-//			return n.beta;
-//		}
-//	}
-	
 	// PLAYER A'S TURN
-	public static int maxValue(Node n, int a, int b) {
+	public static int maxValue(Node n, int a, int b, List<Node> best) {
+		int oldAlpha;
+		
 		if (cutOffTest(n)) {
 			return n.heuristicValue;
 		}
@@ -57,9 +35,12 @@ public class Breakthrough {
 		generateSuccessors(n);
 		
 		for (Node c : n.children) {
-//			n.heuristicValue = Math.max(n.heuristicValue, minValue(c, a, b));
-//			a = Math.max(n.heuristicValue, a);
-			a = Math.max(a, minValue(c, a, b));
+			oldAlpha = a;
+			a = Math.max(a, minValue(c, a, b, best));
+			// If the old alpha was worse than the new alpha, add it to the list of best children
+			if (oldAlpha < a) {
+				best.add(c);
+			}
 			if (a >= b) {
 				return a;
 			}
@@ -68,7 +49,9 @@ public class Breakthrough {
 	}
 	
 	// PLAYER B'S TURN
-	public static int minValue(Node n, int a, int b) {
+	public static int minValue(Node n, int a, int b, List<Node> best) {
+		int oldBeta;
+		
 		if (cutOffTest(n)) {
 			return n.heuristicValue;
 		}
@@ -76,9 +59,12 @@ public class Breakthrough {
 		generateSuccessors(n);
 
 		for (Node c : n.children) {
-//			n.heuristicValue = Math.min(n.heuristicValue, maxValue(c, a, b));
-//			b = Math.min(n.heuristicValue, b);
-			b = Math.min(b, maxValue(c, a, b));
+			oldBeta = b;
+			b = Math.min(b, maxValue(c, a, b, best));
+			// If the old beta is worse than the new beta, add this child to the list of best children
+			if (oldBeta > b) {
+				best.add(c);
+			}
 			if (b <= a) {
 				return b;
 			}
@@ -120,12 +106,12 @@ public class Breakthrough {
 		}
 		
 		if (whiteCounter == 0) {
-			n.heuristicValue = 1;
+			n.heuristicValue = -1;
 			return true;
 		}
 		
 		if (blackCounter == 0) {
-			n.heuristicValue = -1;
+			n.heuristicValue = 1;
 			return true;
 		}
 		
@@ -175,7 +161,7 @@ public class Breakthrough {
 //										printBoard(child);
 										b.children.add(child);
 									}
-									if (b.board[i-1][j+1] == 'X' || b.board[i+1][j-1] == 'B') {
+									if (b.board[i-1][j+1] == 'X' || b.board[i-1][j+1] == 'B') {
 										// Create new node with b as the parent and add to b's children
 										Node child = new Node(b.board, b, false);
 										child.board[i][j] = 'X';
