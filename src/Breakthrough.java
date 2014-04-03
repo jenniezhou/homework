@@ -17,36 +17,34 @@ public class Breakthrough {
 		
 //		alphaBetaPrune(root, -Integer.MIN_VALUE, Integer.MAX_VALUE, true);
 		
-		maxValue(root, Integer.MIN_VALUE, Integer.MAX_VALUE);
-		
-		System.err.println(root.heuristicValue);
+		maxValue(root, -Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 	
-	public static int alphaBetaPrune(Node n, int a, int b, boolean max) {
-		if (cutOffTest(n)) {
-			return n.heuristicValue;
-		}
-		if (max) {
-			generateSuccessors(n.max, n);
-			for (Node c : n.children) {
-				a = Math.max(a, alphaBetaPrune(c, a, b, !max));
-				if (b <= a) {
-					break;
-				}
-			}
-			return a;
-		}
-		else {
-			generateSuccessors(n.max, n);
-			for (Node c : n.children) {
-				b = Math.min(b, alphaBetaPrune(c, a, b, !max));
-				if (b <= a) {
-					break;
-				}
-			}
-			return b;
-		}
-	}
+//	public static int alphaBetaPrune(Node n, int a, int b, boolean max) {
+//		if (cutOffTest(n)) {
+//			return n.heuristicValue;
+//		}
+//		if (max) {
+//			generateSuccessors(n.max, n);
+//			for (Node c : n.children) {
+//				n.alpha = Math.max(n.alpha, alphaBetaPrune(c, n.alpha, n.beta, !max));
+//				if (n.beta <= n.alpha) {
+//					break;
+//				}
+//			}
+//			return n.alpha;
+//		}
+//		else {
+//			generateSuccessors(n.max, n);
+//			for (Node c : n.children) {
+//				n.beta = Math.min(n.beta, alphaBetaPrune(c, n.alpha, n.beta, !max));
+//				if (n.beta <= n.alpha) {
+//					break;
+//				}
+//			}
+//			return n.beta;
+//		}
+//	}
 	
 	// PLAYER A'S TURN
 	public static int maxValue(Node n, int a, int b) {
@@ -57,8 +55,9 @@ public class Breakthrough {
 		generateSuccessors(n.max, n);
 		
 		for (Node c : n.children) {
-			n.heuristicValue = Math.max(n.heuristicValue, minValue(c, a, b));
-			a = Math.max(n.heuristicValue, a);
+//			n.heuristicValue = Math.max(n.heuristicValue, minValue(c, a, b));
+//			a = Math.max(n.heuristicValue, a);
+			a = Math.max(a, minValue(c, a, b));
 			if (a >= b) {
 				return a;
 			}
@@ -69,14 +68,16 @@ public class Breakthrough {
 	// PLAYER B'S TURN
 	public static int minValue(Node n, int a, int b) {
 		if (cutOffTest(n)) {
+			System.err.println("Min value");
 			return n.heuristicValue;
 		}
 		
 		generateSuccessors(n.max, n);
 
 		for (Node c : n.children) {
-			n.heuristicValue = Math.min(n.heuristicValue, maxValue(c, a, b));
-			b = Math.min(n.heuristicValue, b);
+//			n.heuristicValue = Math.min(n.heuristicValue, maxValue(c, a, b));
+//			b = Math.min(n.heuristicValue, b);
+			b = Math.min(b, maxValue(c, a, b));
 			if (b <= a) {
 				return b;
 			}
@@ -101,17 +102,30 @@ public class Breakthrough {
 			}
 		}	
 		
-		// If the number of pieces captured is six, then return true
-		if (n.numCaptured == 6) {
-			if (n.max) {
-				n.heuristicValue = 1;
-				return true;
-			}
-			else {
-				n.heuristicValue = -1;
-				return true;
+		int whiteCounter = 0;
+		int blackCounter = 0;
+		
+		for (int i = 0; i < 6; i++) {
+			for (int j = 0; j < 3; j++) {
+				if (n.board[j][i] == 'W') {
+					++whiteCounter;
+				}
+				if (n.board[j][i] == 'B') {
+					++blackCounter;
+				}
 			}
 		}
+		
+		if (whiteCounter == 0) {
+			n.heuristicValue = 1;
+			return true;
+		}
+		
+		if (blackCounter == 0) {
+			n.heuristicValue = -1;
+			return true;
+		}
+		
 		return false;
 	}
 	
@@ -135,6 +149,18 @@ public class Breakthrough {
 	//								printBoard(forward);
 									b.children.add(child);
 								}
+								if (j == 0) {
+									if (b.board[j+1][i-1] == 'X' || b.board[j+1][i-1] == 'B') {
+										// Create new node with b as the parent and add to b's children
+										Node child = new Node(b.board, b, false);
+										child.board[j][i] = 'X';
+										child.board[j+1][i-1] = 'W';
+										child.xPos = i-1;
+										child.yPos = j+1;
+	//									printBoard(forwardRight);
+										b.children.add(child);
+									}
+								}
 								if (j == 1) {// 0) {
 									if (b.board[j-1][i-1] == 'X' || b.board[j-1][i-1] == 'B') {
 										// Create new node with b as the parent and add to b's children
@@ -146,8 +172,6 @@ public class Breakthrough {
 	//									printBoard(forwardLeft);
 										b.children.add(child);
 									}
-//								}
-//								if (j < 2) {
 									if (b.board[j+1][i-1] == 'X' || b.board[j+1][i-1] == 'B') {
 										// Create new node with b as the parent and add to b's children
 										Node child = new Node(b.board, b, false);
@@ -156,6 +180,18 @@ public class Breakthrough {
 										child.xPos = i-1;
 										child.yPos = j+1;
 	//									printBoard(forwardRight);
+										b.children.add(child);
+									}
+								}
+								if (j == 2) {
+									if (b.board[j-1][i-1] == 'X' || b.board[j-1][i-1] == 'B') {
+										// Create new node with b as the parent and add to b's children
+										Node child = new Node(b.board, b, false);
+										child.board[j][i] = 'X';
+										child.board[j-1][i-1] = 'W';
+										child.xPos = i-1;
+										child.yPos = j-1;
+	//									printBoard(forwardLeft);
 										b.children.add(child);
 									}
 								}
@@ -183,6 +219,18 @@ public class Breakthrough {
 	//								printBoard(forward);
 									b.children.add(child);
 								}
+								if (j == 0) {
+									if (b.board[j+1][i+1] == 'X' || b.board[j+1][i+1] == 'W') {
+										// Create new node with b as the parent and add to b's children
+										Node child = new Node(b.board, b, true);
+										child.board[j][i] = 'X';
+										child.board[j+1][i+1] = 'B';
+										child.xPos = i+1;
+										child.yPos = j+1;
+	//									printBoard(forwardRight);
+										b.children.add(child);
+									}
+								}
 								if (j == 1) { // > 0) {
 									if (b.board[j-1][i+1] == 'X' || b.board[j-1][i+1] == 'W') {
 										// Create new node with b as the parent and add to b's children
@@ -194,8 +242,6 @@ public class Breakthrough {
 	//									printBoard(forwardLeft);
 										b.children.add(child);
 									}
-//								}
-//								if (j < 2) {
 									if (b.board[j+1][i+1] == 'X' || b.board[j+1][i+1] == 'W') {
 										// Create new node with b as the parent and add to b's children
 										Node child = new Node(b.board, b, true);
@@ -204,6 +250,18 @@ public class Breakthrough {
 										child.xPos = i+1;
 										child.yPos = j+1;
 	//									printBoard(forwardRight);
+										b.children.add(child);
+									}
+								}
+								if (j == 2) {
+									if (b.board[j-1][i+1] == 'X' || b.board[j-1][i+1] == 'W') {
+										// Create new node with b as the parent and add to b's children
+										Node child = new Node(b.board, b, true);
+										child.board[j][i] = 'X';
+										child.board[j-1][i+1] = 'B';
+										child.xPos = i+1;
+										child.yPos = j-1;
+	//									printBoard(forwardLeft);
 										b.children.add(child);
 									}
 								}

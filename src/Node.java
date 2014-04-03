@@ -9,7 +9,6 @@ public class Node {
 	public int yPos;
 	public Node parent;
 	public boolean max;
-	public int numCaptured;
 	
 	public Node(char[][] c, Node p, boolean m) {
 		children = new ArrayList<Node>();
@@ -24,6 +23,5 @@ public class Node {
 
 		parent = p;
 		max = m; 
-		numCaptured = 0;
 	}
 }
