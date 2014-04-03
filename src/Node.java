@@ -13,11 +13,11 @@ public class Node {
 	public Node(char[][] c, Node p, boolean m) {
 		children = new ArrayList<Node>();
 		
-		board = new char[3][6];
+		board = new char[6][3];
 		
 		for (int i = 0; i < 6; i++) {
 			for (int j = 0; j < 3; j++) {
-				board[j][i] = c[j][i];
+				board[i][j] = c[i][j];
 			}
 		}
 
