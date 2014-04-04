@@ -13,13 +13,11 @@ public class Breakthrough {
 	public static void main(String[] args) {
 		Breakthrough array = new Breakthrough();
 		
-		List<Node> bestPath = new ArrayList<Node>();
-		
-		char[][] temp = array.readFile("src/input.txt");
+		char[][] temp = array.readFile("input.txt");
 		
 		Node root = new Node(temp, null, true, 0);
 		
-		int a = maxValue(root, -Integer.MIN_VALUE, Integer.MAX_VALUE);
+		maxValue(root, -Integer.MIN_VALUE, Integer.MAX_VALUE);
 		
 		Node best = null;
 
