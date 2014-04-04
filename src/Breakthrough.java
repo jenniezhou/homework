@@ -17,20 +17,25 @@ public class Breakthrough {
 		
 		char[][] temp = array.readFile("src/input.txt");
 		
-		Node root = new Node(temp, null, true);
+		Node root = new Node(temp, null, true, 0);
 		
-		int a = maxValue(root, -Integer.MIN_VALUE, Integer.MAX_VALUE, bestPath);
+		int a = maxValue(root, -Integer.MIN_VALUE, Integer.MAX_VALUE);
 		
-		System.err.println(a);
-		
-		Node best = bestPath.get(0).parent.parent;
+		Node best = null;
+
+		for (Node n : root.children) {
+			if (n.heuristicValue == 1) {
+				best = n;
+				break;
+			}
+		}
 	
-//		System.out.println();
-//		System.out.println("Best move: Player A moves from (" + best.fromX + ", " + best.fromY + ") to (" + best.xPos + ", " + best.yPos + ")");
+		System.out.println();
+		System.out.println("Best move: Player A moves from (" + best.fromX + ", " + best.fromY + ") to (" + best.xPos + ", " + best.yPos + ")");
 	}
 	
 	// PLAYER A'S TURN
-	public static int maxValue(Node n, int a, int b, List<Node> best) {
+	public static int maxValue(Node n, int a, int b) {
 		int oldAlpha;
 		
 		if (cutOffTest(n)) {
@@ -42,14 +47,15 @@ public class Breakthrough {
 		for (Node c : n.children) {
 			System.out.println("Player A moves from (" + c.fromX + ", " + c.fromY + ") to (" + c.xPos + ", " + c.yPos + ")");
 			oldAlpha = a;
-			a = Math.max(a, minValue(c, a, b, best));
+			a = Math.max(a, minValue(c, a, b));
+			n.heuristicValue = a;
 			
 			// If the old alpha was worse than the new alpha, add it to the list of best children
 			if (oldAlpha < a) {
-				best.add(c);
+				n.best.add(c);
 			}
 			if (a >= b) {
-//				System.err.println("Skipping Player A's moves from (" + c.fromX + ", " + c.fromY + ") to (" + c.xPos + ", " + c.yPos + ")");
+				System.err.println("Skipping Player A's moves from: (" + c.fromX + ", " + c.fromY + ") to (" + c.xPos + ", " + c.yPos + ")");
 				return a;
 			}
 		}
@@ -57,7 +63,7 @@ public class Breakthrough {
 	}
 	
 	// PLAYER B'S TURN
-	public static int minValue(Node n, int a, int b, List<Node> best) {
+	public static int minValue(Node n, int a, int b) {
 		int oldBeta;
 		
 		if (cutOffTest(n)) {
@@ -69,14 +75,15 @@ public class Breakthrough {
 		for (Node c : n.children) {
 			System.out.println("Player B moves from (" + c.fromX + ", " + c.fromY + ") to (" + c.xPos + ", " + c.yPos + ")");
 			oldBeta = b;
-			b = Math.min(b, maxValue(c, a, b, best));
+			b = Math.min(b, maxValue(c, a, b));
+			n.heuristicValue = b;
 			
 			// If the old beta is worse than the new beta, add this child to the list of best children
 			if (oldBeta > b) {
-				best.add(c);
+				n.best.add(c);
 			}
 			if (b <= a) {
-//				System.err.println("Skipping Player B's moves from (" + c.fromX + ", " + c.fromY + ") to (" + c.xPos + ", " + c.yPos + ")");
+				System.err.println("Skipping Player B's moves from: (" + c.fromX + ", " + c.fromY + ") to (" + c.xPos + ", " + c.yPos + ")");
 				return b;
 			}
 		}
@@ -130,6 +137,7 @@ public class Breakthrough {
 	}
 	
 	public static void generateSuccessors(Node b) {		
+		int childDepth = b.depth + 1;
 		/*
 		 *  If the player is white, then it can only move forward. Find all places in the board where there 
 		 *  is a 'W' and create a new board state with W all next possible places. 
@@ -141,7 +149,7 @@ public class Breakthrough {
 							if (i > 0) {
 								if (b.board[i-1][j] == 'X') {
 									// Create new node with b as the parent and add to b's children
-									Node child = new Node(b.board, b, false);
+									Node child = new Node(b.board, b, false, childDepth);
 									child.board[i][j] = 'X';
 									child.board[i-1][j] = 'W';
 									child.fromX = i;
@@ -154,7 +162,7 @@ public class Breakthrough {
 								if (j == 0) {
 									if (b.board[i-1][j+1] == 'X' || b.board[i-1][j+1] == 'B') {
 										// Create new node with b as the parent and add to b's children
-										Node child = new Node(b.board, b, false);
+										Node child = new Node(b.board, b, false, childDepth);
 										child.board[i][j] = 'X';
 										child.board[i-1][j+1] = 'W';
 										child.fromX = i;
@@ -168,7 +176,7 @@ public class Breakthrough {
 								if (j == 1) {// 0) {
 									if (b.board[i-1][j-1] == 'X' || b.board[i-1][j-1] == 'B') {
 										// Create new node with b as the p1arent and add to b's children
-										Node child = new Node(b.board, b, false);
+										Node child = new Node(b.board, b, false, childDepth);
 										child.board[i][j] = 'X';
 										child.board[i-1][j-1] = 'W';
 										child.fromX = i;
@@ -180,7 +188,7 @@ public class Breakthrough {
 									}
 									if (b.board[i-1][j+1] == 'X' || b.board[i-1][j+1] == 'B') {
 										// Create new node with b as the parent and add to b's children
-										Node child = new Node(b.board, b, false);
+										Node child = new Node(b.board, b, false, childDepth);
 										child.board[i][j] = 'X';
 										child.board[i-1][j+1] = 'W';
 										child.fromX = i;
@@ -194,7 +202,7 @@ public class Breakthrough {
 								if (j == 2) {
 									if (b.board[i-1][j-1] == 'X' || b.board[i-1][j-1] == 'B') {
 										// Create new node with b as the parent and add to b's children
-										Node child = new Node(b.board, b, false);
+										Node child = new Node(b.board, b, false, childDepth);
 										child.board[i][j] = 'X';
 										child.board[i-1][j-1] = 'W';
 										child.fromX = i;
@@ -221,7 +229,7 @@ public class Breakthrough {
 							if (i < 5) {
 								if (b.board[i+1][j] == 'X') {
 									// Create new node with b as the parent and add to b's children
-									Node child = new Node(b.board, b, true);
+									Node child = new Node(b.board, b, true, childDepth);
 									child.board[i][j] = 'X';
 									child.board[i+1][j] = 'B';
 									child.fromX = i;
@@ -234,7 +242,7 @@ public class Breakthrough {
 								if (j == 0) {
 									if (b.board[i+1][j+1] == 'X' || b.board[i+1][j+1] == 'W') {
 										// Create new node with b as the parent and add to b's children
-										Node child = new Node(b.board, b, true);
+										Node child = new Node(b.board, b, true, childDepth);
 										child.board[i][j] = 'X';
 										child.board[i+1][j+1] = 'B';
 										child.fromX = i;
@@ -248,7 +256,7 @@ public class Breakthrough {
 								if (j == 1) { // > 0) {
 									if (b.board[i+1][j-1] == 'X' || b.board[i+1][j-1] == 'W') {
 										// Create new node with b as the parent and add to b's children
-										Node child = new Node(b.board, b, true);
+										Node child = new Node(b.board, b, true, childDepth);
 										child.board[i][j] = 'X';
 										child.board[i+1][j-1] = 'B';
 										child.fromX = i;
@@ -260,7 +268,7 @@ public class Breakthrough {
 									}
 									if (b.board[i+1][j+1] == 'X' || b.board[i+1][j+1] == 'W') {
 										// Create new node with b as the parent and add to b's children
-										Node child = new Node(b.board, b, true);
+										Node child = new Node(b.board, b, true, childDepth);
 										child.board[i][j] = 'X';
 										child.board[i+1][j+1] = 'B';
 										child.fromX = i;
@@ -274,7 +282,7 @@ public class Breakthrough {
 								if (j == 2) {
 									if (b.board[i+1][j-1] == 'X' || b.board[i+1][j-1] == 'W') {
 										// Create new node with b as the parent and add to b's children
-										Node child = new Node(b.board, b, true);
+										Node child = new Node(b.board, b, true, childDepth);
 										child.board[i][j] = 'X';
 										child.board[i+1][j-1] = 'B';
 										child.fromX = i;
