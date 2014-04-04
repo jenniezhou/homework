@@ -7,6 +7,8 @@ public class Node {
 	public List<Node> children;
 	public int xPos;
 	public int yPos;
+	public int fromX;
+	public int fromY;
 	public Node parent;
 	public boolean max;
 	

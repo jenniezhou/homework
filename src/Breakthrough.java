@@ -22,6 +22,11 @@ public class Breakthrough {
 		int a = maxValue(root, -Integer.MIN_VALUE, Integer.MAX_VALUE, bestPath);
 		
 		System.err.println(a);
+		
+		Node best = bestPath.get(0).parent.parent;
+	
+//		System.out.println();
+//		System.out.println("Best move: Player A moves from (" + best.fromX + ", " + best.fromY + ") to (" + best.xPos + ", " + best.yPos + ")");
 	}
 	
 	// PLAYER A'S TURN
@@ -35,13 +40,16 @@ public class Breakthrough {
 		generateSuccessors(n);
 		
 		for (Node c : n.children) {
+			System.out.println("Player A moves from (" + c.fromX + ", " + c.fromY + ") to (" + c.xPos + ", " + c.yPos + ")");
 			oldAlpha = a;
 			a = Math.max(a, minValue(c, a, b, best));
+			
 			// If the old alpha was worse than the new alpha, add it to the list of best children
 			if (oldAlpha < a) {
 				best.add(c);
 			}
 			if (a >= b) {
+//				System.err.println("Skipping Player A's moves from (" + c.fromX + ", " + c.fromY + ") to (" + c.xPos + ", " + c.yPos + ")");
 				return a;
 			}
 		}
@@ -59,13 +67,16 @@ public class Breakthrough {
 		generateSuccessors(n);
 
 		for (Node c : n.children) {
+			System.out.println("Player B moves from (" + c.fromX + ", " + c.fromY + ") to (" + c.xPos + ", " + c.yPos + ")");
 			oldBeta = b;
 			b = Math.min(b, maxValue(c, a, b, best));
+			
 			// If the old beta is worse than the new beta, add this child to the list of best children
 			if (oldBeta > b) {
 				best.add(c);
 			}
 			if (b <= a) {
+//				System.err.println("Skipping Player B's moves from (" + c.fromX + ", " + c.fromY + ") to (" + c.xPos + ", " + c.yPos + ")");
 				return b;
 			}
 		}
@@ -133,6 +144,8 @@ public class Breakthrough {
 									Node child = new Node(b.board, b, false);
 									child.board[i][j] = 'X';
 									child.board[i-1][j] = 'W';
+									child.fromX = i;
+									child.fromY = j;
 									child.xPos = i-1;
 									child.yPos = j;
 //									printBoard(child);
@@ -144,6 +157,8 @@ public class Breakthrough {
 										Node child = new Node(b.board, b, false);
 										child.board[i][j] = 'X';
 										child.board[i-1][j+1] = 'W';
+										child.fromX = i;
+										child.fromY = j;
 										child.xPos = i-1;
 										child.yPos = j+1;
 //										printBoard(child);
@@ -156,6 +171,8 @@ public class Breakthrough {
 										Node child = new Node(b.board, b, false);
 										child.board[i][j] = 'X';
 										child.board[i-1][j-1] = 'W';
+										child.fromX = i;
+										child.fromY = j;
 										child.xPos = i-1;
 										child.yPos = j-1;
 //										printBoard(child);
@@ -166,6 +183,8 @@ public class Breakthrough {
 										Node child = new Node(b.board, b, false);
 										child.board[i][j] = 'X';
 										child.board[i-1][j+1] = 'W';
+										child.fromX = i;
+										child.fromY = j;
 										child.xPos = i-1;
 										child.yPos = j+1;
 //										printBoard(child);
@@ -178,6 +197,8 @@ public class Breakthrough {
 										Node child = new Node(b.board, b, false);
 										child.board[i][j] = 'X';
 										child.board[i-1][j-1] = 'W';
+										child.fromX = i;
+										child.fromY = j;
 										child.xPos = i-1;
 										child.yPos = j-1;
 //										printBoard(child);
@@ -203,6 +224,8 @@ public class Breakthrough {
 									Node child = new Node(b.board, b, true);
 									child.board[i][j] = 'X';
 									child.board[i+1][j] = 'B';
+									child.fromX = i;
+									child.fromY = j;
 									child.xPos = i+1;
 									child.yPos = j;
 //									printBoard(child);
@@ -214,6 +237,8 @@ public class Breakthrough {
 										Node child = new Node(b.board, b, true);
 										child.board[i][j] = 'X';
 										child.board[i+1][j+1] = 'B';
+										child.fromX = i;
+										child.fromY = j;
 										child.xPos = i+1;
 										child.yPos = j+1;
 //										printBoard(child);
@@ -226,6 +251,8 @@ public class Breakthrough {
 										Node child = new Node(b.board, b, true);
 										child.board[i][j] = 'X';
 										child.board[i+1][j-1] = 'B';
+										child.fromX = i;
+										child.fromY = j;
 										child.xPos = i+1;
 										child.yPos = j-1;
 //										printBoard(child);
@@ -236,6 +263,8 @@ public class Breakthrough {
 										Node child = new Node(b.board, b, true);
 										child.board[i][j] = 'X';
 										child.board[i+1][j+1] = 'B';
+										child.fromX = i;
+										child.fromY = j;
 										child.xPos = i+1;
 										child.yPos = j+1;
 //										printBoard(child);
@@ -248,6 +277,8 @@ public class Breakthrough {
 										Node child = new Node(b.board, b, true);
 										child.board[i][j] = 'X';
 										child.board[i+1][j-1] = 'B';
+										child.fromX = i;
+										child.fromY = j;
 										child.xPos = i+1;
 										child.yPos = j-1;
 //										printBoard(child);
